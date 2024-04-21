@@ -1,45 +1,85 @@
-version: "3.7"
-
 services:
   nextcloud:
-    image: linuxserver/nextcloud:latest
+    image: nextcloud:latest
     container_name: nextcloud
     networks:
       - nextcloudnet
+    deploy:
+      resources:
+        limits:
+          cpus: "1.20"
+          memory: 2048M
     environment:
-      - PUID=1002   # dockeruser id
-      - PGID=100    # dockeruser group
-      - TZ=Europe/Zurich
+      - POSTGRES_USER_FILE=/run/secrets/db_username
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_DB_FILE=/run/secrets/db_name
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - TZ=Europe/Berlin
     volumes:
-      - /share/Docker/nextcloud/config:/config
-      - /share/Docker/nextcloud/data:/data
-    ports:
-      - 9443:443
+      - ./persistence/nextcloud:/var/www/html
     restart: unless-stopped
     depends_on:
       - db
+      - redis
+    secrets:
+      - db_password
+      - db_username
+      - db_name
 
   db:
-    image: linuxserver/mariadb:latest
+    image: postgres:latest
     container_name: nextcloud_db
     networks:
-      - nextcloudnet
+      - nextcloudnet    
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 1024M   
     environment:
-      - PUID=1002
-      - PGID=100
-      - MYSQL_ROOT_PASSWORD=db_root-password # replace with own password
-      - TZ=Europe/Zurich
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextclouduser
-      - MYSQL_PASSWORD=db_user_password # replace with own password
+      - POSTGRES_USER_FILE=/run/secrets/db_username
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_DB_FILE=/run/secrets/db_name
+      - PGDATA=/var/lib/postgres/data/pgdata
+      - TZ=Europe/Berlin
     volumes:
-      - /share/Docker/nextcloud/config_db:/config
+      - ./persistence/config_db:/var/lib/postgres/data
     restart: unless-stopped
+    secrets:
+      - db_password
+      - db_username
+      - db_name
+
+  redis:
+      image: redis:alpine
+      container_name: redis-dbcache
+      networks:
+        - nextcloudnet
+      restart: unless-stopped
+
+  ingress:
+    image: nginx:stable-alpine
+    container_name: ingress
+    networks:
+      - nextcloudnet
+    ports:
+      - '9443:9443'
+    restart: unless-stopped
+    volumes:
+      - ./persistence/nginx/conf.d:/etc/nginx/conf.d
+      - ./persistence/nginx/ssl:/etc/nginx/ssl
+      - ./persistence/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./persistence/nginx/public:/opt/test-static/public
+      - ./persistence/nginx/downloads:/opt/downloads
 
 networks:
-    nextcloudnet:
-        driver: bridge    
-        ipam:
-          config:
-            - subnet: 10.0.8.0/24
-              gateway: 10.0.8.1 
+  nextcloudnet:
+
+secrets:
+  db_password:
+    file: ./db_password.txt
+  db_username:
+    file: ./db_username.txt
+  db_name:
+    file: ./db_name.txt
