@@ -27,6 +27,20 @@ services:
       - db_username
       - db_name
 
+  nextcloud-cron:
+    image: nextcloud:latest
+    container_name: nextcloud-cron
+    entrypoint: /cron.sh
+    networks:
+      - nextcloudnet
+    volumes:
+      - ./persistence/nextcloud:/var/www/html
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+      - nextcloud
+
   db:
     image: postgres:latest
     container_name: nextcloud_db
