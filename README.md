@@ -1,5 +1,25 @@
 # qnap-nextcloud
 
+## Self signed certificate
+
+[Source](https://mpolinowski.github.io/docs/DevOps/NGINX/2020-08-27--nginx-docker-ssl-certs-self-signed/2020-08-27/)
+
+Create a new self signed certifcate:
+
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/ssl/nginx-selfsigned.key -out nginx/ssl/nginx-selfsigned.crt
+
+Use your server IP address as `Common Name` e.g. 192.168.1.19
+
+We should also create a strong Diffie-Hellman group, which is used in
+negotiating Perfect Forward Secrecy with clients. We can do this by typing:
+
+sudo openssl dhparam -out /opt/docker-ingress/configuration/ssl/dhparam.pem 4096
+
+Se the ngnix configurations for how to use they generated files
+
+--- 
+Original documentation
+
 ## Requirements
 
 - Latest QNAP Firmware Installed.
@@ -134,3 +154,8 @@ Resource limits can be manually configured in the advanced settings. This allows
 - [Blog post regarding Nextcloud updates with linuxserver/nextcloud container](https://discourse.linuxserver.io/t/upgrading-nextcloud/400)
 - [Container documentation linuxserver/nextcloud](https://docs.linuxserver.io/images/docker-nextcloud)
 - [Container documentation linuxserver/mariadb](https://docs.linuxserver.io/images/docker-mariadb)
+
+- https://linuxiac.com/how-to-install-nextcloud-with-docker-compose/
+- https://mpolinowski.github.io/docs/DevOps/NGINX/2020-08-26--nginx-docker-setup/2020-08-26/
+- https://mpolinowski.github.io/docs/DevOps/NGINX/2020-08-27--nginx-docker-ssl-certs-self-signed/2020-08-27/
+

@@ -1,0 +1,6 @@
+persistence/nextcloud
+persistence/config_db
+persistence/nginx
+!persistence/nginx/conf.d
+!persistence/nginx/nginx.conf
+
