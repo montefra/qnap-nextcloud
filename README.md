@@ -17,6 +17,36 @@ sudo openssl dhparam -out /opt/docker-ingress/configuration/ssl/dhparam.pem 4096
 
 Se the ngnix configurations for how to use they generated files
 
+## Manual settings
+
+### Errors
+#### HTTPS
+
+> Accessing site insecurely via HTTP. You are strongly advised to set up your server to require HTTPS instead. Without it some important web functionality like "copy to clipboard" or "service workers" will not work! For more details see the documentation ↗.
+
+Set `'overwriteprotocol' => 'https'` in `config/config.php` or run the command:
+
+    docker exec -u 33 nextcloud /var/www/html/occ config:system:set overwriteprotocol --type=string --value=https
+
+Source: https://help.nextcloud.com/t/cannot-grant-access/64566/12
+
+### Warnings
+#### Maintainance window
+
+Source: https://docs.nextcloud.com/server/29/admin_manual/configuration_server/background_jobs_configuration.html#maintenance-window-start
+
+It can be set running the command:
+
+    docker exec -u 33 nextcloud /var/www/html/occ config:system:set maintenance_window_start --type=integer --value=1
+
+#### Missing DB indeces:
+
+Run the command 
+
+    docker exec -u 33 nextcloud /var/www/html/occ db:add-missing-indices
+
+to add the `fs_storage_path_prefix` index to the `oc_filecache` table
+
 --- 
 Original documentation
 
