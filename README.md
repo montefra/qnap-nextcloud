@@ -47,6 +47,20 @@ Run the command
 
 to add the `fs_storage_path_prefix` index to the `oc_filecache` table
 
+### Cron
+
+To customize or add cron entries executed by the `nextcloud-cron` container,
+edit the file `/var/spool/cron/crontabs/www-data`.
+
+E.g.
+
+    0 * * * * php /var/www/nextcloud/occ preview:pre-generate 
+
+The `/cron.sh` invoked as entry point by the container, starts the `busybox
+crond` for the user `www-data`, which executes the jobs defined in the above
+file.
+[Source](https://help.nextcloud.com/t/clarification-regarding-cron-jobs-setup-config/134450/4)
+
 --- 
 Original documentation
 
