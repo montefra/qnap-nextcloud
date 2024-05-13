@@ -28,7 +28,7 @@ services:
       - db_name
 
   nextcloud-cron:
-    image: nextcloud:latest
+    build: .
     container_name: nextcloud-cron
     entrypoint: /cron.sh
     networks:

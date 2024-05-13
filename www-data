@@ -1,0 +1,2 @@
+*/5 * * * * php -f /var/www/html/cron.php
+0 */6 * * * php /var/www/nextcloud/occ preview:pre-generate 
