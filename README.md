@@ -61,6 +61,19 @@ crond` for the user `www-data`, which executes the jobs defined in the above
 file.
 [Source](https://help.nextcloud.com/t/clarification-regarding-cron-jobs-setup-config/134450/4)
 
+But `/var/spool/cron/crontabs/` it not exposes as a volume. To be able to
+persist the changes across container restarts, create a new image containing the
+desired www-data with and save it to a tar file:
+
+    docker build -t nextcloud-cron:latest .
+    docker image save -o nexcloud-cron.tar nextcloud-cron:latest
+
+Then import `nextcloud-cron.tar` in the container station and reference the new
+image in the docker-compose file
+It seems that the container station does not support `build` instructions in the
+compose file
+
+
 --- 
 Original documentation
 
