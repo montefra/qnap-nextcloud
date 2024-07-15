@@ -65,8 +65,8 @@ But `/var/spool/cron/crontabs/` it not exposes as a volume. To be able to
 persist the changes across container restarts, create a new image containing the
 desired www-data with and save it to a tar file:
 
-    docker build -t nextcloud-cron:latest .
-    docker image save -o nexcloud-cron.tar nextcloud-cron:latest
+    docker build -t nextcloud-cron:latest-arm64 --platform linux/arm64/v8 . 
+    docker image save -o nexcloud-cron.tar nextcloud-cron:latest-arm64
 
 Then import `nextcloud-cron.tar` in the container station and reference the new
 image in the docker-compose file
