@@ -6,14 +6,14 @@
 
 Create a new self signed certifcate:
 
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/ssl/nginx-selfsigned.key -out nginx/ssl/nginx-selfsigned.crt
+    openssl req -x509 -nodes -days 365 \
+    -newkey rsa:2048 \
+    -keyout nginx/ssl/nginx-selfsigned.key \
+    -out nginx/ssl/nginx-selfsigned.crt \
+    -subj "/CN=192.168.178.1" \
+    -addext "subjectAltName=IP:192.168.178.1"
 
-Use your server IP address as `Common Name` e.g. 192.168.1.19
-
-We should also create a strong Diffie-Hellman group, which is used in
-negotiating Perfect Forward Secrecy with clients. We can do this by typing:
-
-sudo openssl dhparam -out /opt/docker-ingress/configuration/ssl/dhparam.pem 4096
+Use your server IP address as `Common Name` e.g. 192.168.178.1
 
 Se the ngnix configurations for how to use they generated files
 
